@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Архитектура — Кабинет Demand &amp; Supply · Dnipro-M</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1d23;
+    --ink-soft: #5a6170;
+    --paper: #fafbfc;
+    --line: #d9dde4;
+    --red: #e8484d;
+    --red-dark: #c53338;
+    --blue: #2b6cb0;
+    --card: #ffffff;
+    --mono: "IBM Plex Mono", monospace;
+    --sans: "IBM Plex Sans", sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 80px; }
+
+  /* header */
+  .doc-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 3px solid var(--ink); padding-bottom: 18px; margin-bottom: 8px;
+  }
+  .doc-head h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; }
+  .doc-head .brand { font-family: var(--mono); font-size: 13px; color: var(--red); font-weight: 600; letter-spacing: 2px; }
+  .doc-meta {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-soft);
+    display: flex; gap: 24px; padding: 10px 0 36px;
+  }
+
+  /* flow */
+  .flow-title { font-family: var(--mono); font-size: 12px; letter-spacing: 2px; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 16px; }
+  .flow { display: grid; grid-template-columns: 1fr 56px 1fr 56px 1fr 56px 1fr; align-items: stretch; margin-bottom: 12px; }
+  .node {
+    background: var(--card); border: 1.5px solid var(--ink); border-radius: 6px;
+    padding: 18px 16px 14px; position: relative;
+  }
+  .node .tag {
+    position: absolute; top: -11px; left: 12px; background: var(--ink); color: #fff;
+    font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    padding: 2px 9px; border-radius: 3px;
+  }
+  .node.accent { border-color: var(--red); }
+  .node.accent .tag { background: var(--red); }
+  .node h3 { font-size: 16px; font-weight: 600; margin: 4px 0 2px; }
+  .node .sub { font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); }
+  .node ul { list-style: none; margin-top: 10px; font-size: 13px; }
+  .node li { padding: 3px 0 3px 14px; position: relative; }
+  .node li::before { content: "·"; position: absolute; left: 2px; color: var(--red); font-weight: 700; }
+  .arrow { display: flex; align-items: center; justify-content: center; }
+  .arrow svg { width: 100%; height: 26px; overflow: visible; }
+  .arrow path { stroke: var(--red); stroke-width: 2; fill: none; stroke-dasharray: 6 5; animation: flow 1.2s linear infinite; }
+  .arrow polygon { fill: var(--red); }
+  @keyframes flow { to { stroke-dashoffset: -11; } }
+  .flow-caption { font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-bottom: 48px; }
+
+  /* layers table */
+  section h2 { font-size: 19px; font-weight: 700; margin: 0 0 14px; padding-top: 8px; }
+  .layers { width: 100%; border-collapse: collapse; margin-bottom: 48px; font-size: 14px; }
+  .layers th {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--ink-soft); text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--ink);
+  }
+  .layers td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .layers td:first-child { font-family: var(--mono); font-weight: 600; white-space: nowrap; }
+  .chip { font-family: var(--mono); font-size: 12px; background: #f0f2f5; border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; white-space: nowrap; }
+
+  /* incident loop */
+  .loop {
+    background: var(--card); border: 1.5px solid var(--line); border-left: 4px solid var(--red);
+    border-radius: 6px; padding: 20px 24px; margin-bottom: 48px;
+  }
+  .loop .path-line { font-family: var(--mono); font-size: 13.5px; margin: 10px 0 14px; color: var(--ink); }
+  .loop .path-line b { color: var(--red); }
+  .loop p { font-size: 14px; color: var(--ink-soft); }
+
+  /* roadmap */
+  .levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 56px; }
+  .lvl { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+  .lvl .n { font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--ink-soft); }
+  .lvl h4 { font-size: 14.5px; margin: 4px 0 6px; }
+  .lvl p { font-size: 12.5px; color: var(--ink-soft); }
+  .lvl.on { border-color: var(--red); }
+  .lvl.on .n { color: var(--red); font-weight: 600; }
+  .lvl .state { font-family: var(--mono); font-size: 11px; margin-top: 8px; display: inline-block; padding: 1px 8px; border-radius: 3px; }
+  .lvl.on .state { background: #fdecec; color: var(--red-dark); }
+  .lvl .state.wait { background: #f0f2f5; color: var(--ink-soft); }
+
+  .foot { border-top: 1px solid var(--line); padding-top: 14px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); display: flex; justify-content: space-between; }
+
+  @media (max-width: 800px) {
+    .flow { grid-template-columns: 1fr; gap: 2px; }
+    .arrow svg { transform: rotate(90deg); height: 40px; width: 26px; margin: 4px auto; }
+    .levels { grid-template-columns: 1fr 1fr; }
+    .doc-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .arrow path { animation: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="doc-head">
+    <div>
+      <div class="brand">DNIPRO-M · ТЕХНИЧЕСКАЯ ДОКУМЕНТАЦИЯ</div>
+      <h1>Кабинет Demand &amp; Supply — архитектура</h1>
+    </div>
+  </header>
+  <div class="doc-meta">
+    <span>DOC: ARCH-001</span>
+    <span>ВЕРСИЯ: 1.0</span>
+    <span>ДАТА: 2026-07-09</span>
+    <span>АВТОР: V. Tereshyn</span>
+  </div>
+
+  <div class="flow-title">Поток данных</div>
+  <div class="flow">
+    <div class="node">
+      <span class="tag">OLAP</span>
+      <h3>Databricks</h3>
+      <div class="sub">аналитическое хранилище</div>
+      <ul>
+        <li>схема <span class="chip">dnipro_m</span></li>
+        <li>Amazon FBA ledger (BI-слой)</li>
+        <li>источник сырых данных</li>
+      </ul>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 56 26"><path d="M0 13 H42"/><polygon points="42,7 54,13 42,19"/></svg></div>
+    <div class="node">
+      <span class="tag">ETL</span>
+      <h3>Loader</h3>
+      <div class="sub">ноутбук · Serverless</div>
+      <ul>
+        <li>чтение снапшота остатков</li>
+        <li>маппинг disposition → статусы</li>
+        <li>генерация инцидентов</li>
+      </ul>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 56 26"><path d="M0 13 H42"/><polygon points="42,7 54,13 42,19"/></svg></div>
+    <div class="node">
+      <span class="tag">OLTP</span>
+      <h3>Lakebase</h3>
+      <div class="sub">serverless Postgres</div>
+      <ul>
+        <li>схема <span class="chip">kabinet_data</span></li>
+        <li>8 таблиц · operational store</li>
+        <li>OAuth M2M (service principal)</li>
+      </ul>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 56 26"><path d="M0 13 H42"/><polygon points="42,7 54,13 42,19"/></svg></div>
+    <div class="node accent">
+      <span class="tag">UI</span>
+      <h3>Streamlit</h3>
+      <div class="sub">Streamlit Cloud</div>
+      <ul>
+        <li>Остатки · Инциденты · Прогноз</li>
+        <li>ABC-анализ, категории</li>
+        <li>журнал инцидентов</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flow-caption">Data Engineering → Data Architecture → Application Layer · полный цикл</div>
+
+  <section>
+    <h2>Слои системы</h2>
+    <table class="layers">
+      <thead>
+        <tr><th>Слой</th><th>Технология</th><th>Роль</th><th>Ключевые объекты</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>OLAP</td>
+          <td>Databricks</td>
+          <td>Аналитическое хранилище. Данные грузит BI-слой (Д. Короткова), Кабинет читает read-only.</td>
+          <td><span class="chip">dnipro_m.raw_amazon_fba_inventory_ledger_summary</span></td>
+        </tr>
+        <tr>
+          <td>ETL</td>
+          <td>Databricks Notebook</td>
+          <td>Перенос и нормализация: снапшот остатков + генерация инцидентов по правилам.</td>
+          <td><span class="chip">Kabinet — Stock Loader</span> · ячейки 1–3</td>
+        </tr>
+        <tr>
+          <td>OLTP</td>
+          <td>Lakebase (Postgres)</td>
+          <td>Операционное состояние системы: остатки, журнал инцидентов, черновики заказов.</td>
+          <td><span class="chip">stock_local</span> <span class="chip">incidents</span> <span class="chip">sales_velocity</span> <span class="chip">draft_orders</span> +4</td>
+        </tr>
+        <tr>
+          <td>UI</td>
+          <td>Streamlit Cloud</td>
+          <td>Приложение для операций: аналитика, журнал задач, прогноз. Подключение через OAuth M2M.</td>
+          <td><span class="chip">kabinet-dashboard-dnipro-m.streamlit.app</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Контур инцидентов</h2>
+    <div class="loop">
+      <div class="path-line">stock_local → правила (<b>остаток = 0</b> · <b>остаток ≤ 3</b>) → incidents → страница «Инциденты» → действие человека</div>
+      <p>Система сама находит проблемы при каждом обновлении данных и ведёт их жизненный цикл: открытие без дублей, автозакрытие при восстановлении стока. Отчёты отвечают на вопрос «почему так», журнал инцидентов — «что делать сегодня».</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Уровни зрелости</h2>
+    <div class="levels">
+      <div class="lvl on">
+        <div class="n">УРОВЕНЬ 1</div>
+        <h4>Статические правила</h4>
+        <p>Фиксированные пороги: out_of_stock, low_stock.</p>
+        <span class="state">в проде</span>
+      </div>
+      <div class="lvl">
+        <div class="n">УРОВЕНЬ 2</div>
+        <h4>Динамические пороги</h4>
+        <p>Days of cover: остаток ÷ скорость продаж.</p>
+        <span class="state wait">ждёт данных продаж</span>
+      </div>
+      <div class="lvl">
+        <div class="n">УРОВЕНЬ 3</div>
+        <h4>Аномалии</h4>
+        <p>Отклонения от прогнозного коридора.</p>
+        <span class="state wait">ждёт истории</span>
+      </div>
+      <div class="lvl">
+        <div class="n">УРОВЕНЬ 4</div>
+        <h4>ИИ-агенты</h4>
+        <p>Триаж, приоритизация, черновик заказа.</p>
+        <span class="state wait">после ур. 1–2</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>kabinet-dashboard · vtereshyn-dnipro-m</span>
+    <span>масштабирование: Amazon → Shopify → Leroy Merlin (Mirakl)</span>
+  </footer>
+
+</div>
+</body>
+</html>
